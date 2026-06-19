@@ -13,11 +13,11 @@ final class TabParser: ScoreParserProtocol {
             string: text,
             attributes: [
                 .font: UIFont.monospacedSystemFont(ofSize: 15, weight: .regular),
-                .foregroundColor: UIColor.label,
+                .foregroundColor: ChordPressTheme.Color.charcoal,
                 .paragraphStyle: paragraph
             ]
         )
-        let title = fileName.map { ($0 as NSString).deletingPathExtension } ?? "文本 Tab"
+        let title = fileName.map { ($0 as NSString).deletingPathExtension } ?? T("文本 Tab", "Text Tab")
         return MusicScore(
             id: UUID(),
             title: title,
@@ -27,6 +27,7 @@ final class TabParser: ScoreParserProtocol {
             importedAt: Date(),
             sourceText: text,
             folder: nil,
+            tags: [],
             playbackEvents: nil
         )
     }

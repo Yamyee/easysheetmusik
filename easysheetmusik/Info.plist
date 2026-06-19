@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>NSCameraUsageDescription</key>
-	<string>用于拍摄并导入纸质乐谱。</string>
+	<string>Use the camera to capture and import paper scores.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>用于从照片中导入乐谱图片。</string>
+	<string>Use the photo library to import score images.</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

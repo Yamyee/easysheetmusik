@@ -24,13 +24,14 @@ final class PDFParser: ScoreParserProtocol {
 
         return MusicScore(
             id: UUID(),
-            title: metadataTitle?.nonEmpty ?? displayName(from: fileName, fallback: "未命名 PDF"),
+            title: metadataTitle?.nonEmpty ?? displayName(from: fileName, fallback: T("未命名 PDF", "Untitled PDF")),
             artist: author?.nonEmpty,
             pages: pages,
             sourceFormat: .pdf,
             importedAt: Date(),
             sourceText: nil,
             folder: nil,
+            tags: [],
             playbackEvents: nil
         )
     }

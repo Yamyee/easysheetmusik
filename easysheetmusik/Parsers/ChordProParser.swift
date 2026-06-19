@@ -38,7 +38,7 @@ final class ChordProParser: ScoreParserProtocol {
             throw ParserError.emptyDocument
         }
 
-        let fallbackTitle = fileName.map { ($0 as NSString).deletingPathExtension } ?? "未命名和弦谱"
+        let fallbackTitle = fileName.map { ($0 as NSString).deletingPathExtension } ?? T("未命名和弦谱", "Untitled ChordPro")
         return MusicScore(
             id: UUID(),
             title: title ?? fallbackTitle,
@@ -48,6 +48,7 @@ final class ChordProParser: ScoreParserProtocol {
             importedAt: Date(),
             sourceText: text,
             folder: nil,
+            tags: [],
             playbackEvents: nil
         )
     }
@@ -79,7 +80,7 @@ final class ChordProParser: ScoreParserProtocol {
                 string: String(line[chordRange]),
                 attributes: [
                     .font: UIFont.monospacedSystemFont(ofSize: 15, weight: .bold),
-                    .foregroundColor: UIColor.systemOrange,
+                    .foregroundColor: ChordPressTheme.Color.primary,
                     .baselineOffset: 5
                 ]
             ))

@@ -10,17 +10,17 @@ final class ChordProEditorViewController: UIViewController {
     private let scoreID: UUID?
     private let textView = UITextView()
     private let previewView = UITextView()
-    private let segmentedControl = UISegmentedControl(items: ["编辑", "预览"])
+    private let segmentedControl = UISegmentedControl(items: [T("编辑", "Edit"), T("预览", "Preview")])
     private let transposer = ChordTransposer()
 
     init(score: MusicScore? = nil) {
         scoreID = score?.id
         super.init(nibName: nil, bundle: nil)
         textView.text = score?.sourceText ?? """
-        {title: 未命名和弦谱}
+        {title: \(T("未命名和弦谱", "Untitled ChordPro"))}
         {artist: }
 
-        [C]在这里输入歌词和[Am]和弦
+        \(T("[C]在这里输入歌词和[Am]和弦", "[C]Type lyrics and [Am]chords here"))
         """
     }
 
@@ -31,8 +31,8 @@ final class ChordProEditorViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = scoreID == nil ? "新建 ChordPro" : "编辑 ChordPro"
-        view.backgroundColor = .systemBackground
+        title = scoreID == nil ? T("新建 ChordPro", "New ChordPro") : T("编辑 ChordPro", "Edit ChordPro")
+        view.backgroundColor = ChordPressTheme.Color.surface
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .cancel,
             target: self,
@@ -53,16 +53,19 @@ final class ChordProEditorViewController: UIViewController {
         navigationItem.titleView = segmentedControl
 
         textView.font = .monospacedSystemFont(ofSize: 17, weight: .regular)
+        textView.backgroundColor = ChordPressTheme.Color.canvas
+        textView.textColor = ChordPressTheme.Color.charcoal
         textView.autocorrectionType = .no
         textView.autocapitalizationType = .none
         textView.keyboardDismissMode = .interactive
 
         previewView.isEditable = false
         previewView.isHidden = true
+        previewView.backgroundColor = ChordPressTheme.Color.canvas
         previewView.textContainerInset = UIEdgeInsets(top: 24, left: 20, bottom: 40, right: 20)
 
-        let downButton = makeTransposeButton(title: "降半音", image: "minus", action: #selector(transposeDown))
-        let upButton = makeTransposeButton(title: "升半音", image: "plus", action: #selector(transposeUp))
+        let downButton = makeTransposeButton(title: T("降半音", "Transpose Down"), image: "minus", action: #selector(transposeDown))
+        let upButton = makeTransposeButton(title: T("升半音", "Transpose Up"), image: "plus", action: #selector(transposeUp))
         let toolbar = UIStackView(arrangedSubviews: [downButton, upButton])
         toolbar.distribution = .fillEqually
         toolbar.spacing = 12
@@ -88,9 +91,7 @@ final class ChordProEditorViewController: UIViewController {
     }
 
     private func makeTransposeButton(title: String, image: String, action: Selector) -> UIButton {
-        var configuration = UIButton.Configuration.tinted()
-        configuration.title = title
-        configuration.image = UIImage(systemName: image)
+        var configuration = ChordPressTheme.secondaryButton(title: title, image: image)
         configuration.imagePadding = 6
         let button = UIButton(configuration: configuration)
         button.addTarget(self, action: action, for: .touchUpInside)
@@ -102,7 +103,7 @@ final class ChordProEditorViewController: UIViewController {
             data: Data(textView.text.utf8),
             fileName: nil
         ), case .attributedText(let text) = score.pages.first?.content else {
-            previewView.text = "暂无可预览内容"
+            previewView.text = T("暂无可预览内容", "No preview available")
             return
         }
         previewView.attributedText = text

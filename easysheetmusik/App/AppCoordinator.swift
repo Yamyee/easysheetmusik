@@ -11,6 +11,7 @@ final class AppCoordinator {
     }
 
     func start() {
+        ChordPressTheme.applyGlobalAppearance(to: window)
         let library = LibraryViewController(viewModel: libraryViewModel)
         library.delegate = self
         navigationController.setViewControllers([library], animated: false)
@@ -70,11 +71,11 @@ extension AppCoordinator: ChordProEditorViewControllerDelegate {
             editor.dismiss(animated: true)
         } catch {
             let alert = UIAlertController(
-                title: "保存失败",
+                title: T("保存失败", "Save Failed"),
                 message: error.localizedDescription,
                 preferredStyle: .alert
             )
-            alert.addAction(UIAlertAction(title: "好", style: .default))
+            alert.addAction(UIAlertAction(title: T("好", "OK"), style: .default))
             editor.present(alert, animated: true)
         }
     }

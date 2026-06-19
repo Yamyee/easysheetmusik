@@ -116,6 +116,7 @@ private struct StoredScore: Codable {
     let importedAt: Date
     let sourceText: String?
     let folder: String?
+    let tags: [String]?
     let playbackEvents: [PlaybackEvent]?
 
     init(score: MusicScore) throws {
@@ -131,6 +132,7 @@ private struct StoredScore: Codable {
         importedAt = score.importedAt
         sourceText = score.sourceText
         folder = score.folder
+        tags = score.tags
         playbackEvents = score.playbackEvents
     }
 
@@ -148,6 +150,7 @@ private struct StoredScore: Codable {
                 importedAt: importedAt,
                 sourceText: sourceText,
                 folder: folder,
+                tags: tags ?? [],
                 playbackEvents: playbackEvents
             )
         }

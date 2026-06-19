@@ -27,15 +27,43 @@ final class SetlistsViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "演出歌单"
+        title = T("演出歌单", "Setlists")
         navigationItem.largeTitleDisplayMode = .always
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .add,
             target: self,
             action: #selector(createSetlist)
         )
+        tableView.backgroundColor = ChordPressTheme.Color.surface
+        tableView.cellLayoutMarginsFollowReadableWidth = true
+        tableView.rowHeight = traitCollection.horizontalSizeClass == .regular ? 76 : 60
+        tableView.sectionHeaderTopPadding = 20
+        tableView.tableHeaderView = makeHeaderView()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Setlist")
         reloadSetlists()
+    }
+
+    private func makeHeaderView() -> UIView {
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: 1, height: 92))
+        let title = UILabel()
+        title.text = T("为排练和现场演出安排曲目顺序", "Arrange songs for rehearsals and live sets")
+        title.font = .systemFont(ofSize: 20, weight: .semibold)
+        title.textColor = ChordPressTheme.Color.charcoal
+        let detail = UILabel()
+        detail.text = T("支持踏板连续翻页，演出时会提示下一首。", "Supports pedal page turns and next-song prompts during performance.")
+        detail.font = .preferredFont(forTextStyle: .subheadline)
+        detail.textColor = ChordPressTheme.Color.slate
+        let stack = UIStackView(arrangedSubviews: [title, detail])
+        stack.axis = .vertical
+        stack.spacing = 6
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: container.layoutMarginsGuide.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: container.layoutMarginsGuide.trailingAnchor),
+            stack.centerYAnchor.constraint(equalTo: container.centerYAnchor)
+        ])
+        return container
     }
 
     private func reloadSetlists() {
@@ -44,10 +72,10 @@ final class SetlistsViewController: UITableViewController {
     }
 
     @objc private func createSetlist() {
-        let alert = UIAlertController(title: "新建演出歌单", message: nil, preferredStyle: .alert)
-        alert.addTextField { $0.placeholder = "例如：本周敬拜" }
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
-        alert.addAction(UIAlertAction(title: "创建", style: .default) { [weak self, weak alert] _ in
+        let alert = UIAlertController(title: T("新建演出歌单", "New Setlist"), message: nil, preferredStyle: .alert)
+        alert.addTextField { $0.placeholder = T("例如：本周敬拜", "e.g. Sunday Service") }
+        alert.addAction(UIAlertAction(title: T("取消", "Cancel"), style: .cancel))
+        alert.addAction(UIAlertAction(title: T("创建", "Create"), style: .default) { [weak self, weak alert] _ in
             guard let self,
                   let name = alert?.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines),
                   !name.isEmpty else { return }
@@ -78,8 +106,8 @@ final class SetlistsViewController: UITableViewController {
     }
 
     private func show(_ error: Error) {
-        let alert = UIAlertController(title: "操作失败", message: error.localizedDescription, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "好", style: .default))
+        let alert = UIAlertController(title: T("操作失败", "Operation Failed"), message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: T("好", "OK"), style: .default))
         present(alert, animated: true)
     }
 
@@ -92,9 +120,13 @@ final class SetlistsViewController: UITableViewController {
         let setlist = setlists[indexPath.row]
         var configuration = cell.defaultContentConfiguration()
         configuration.text = setlist.name
-        configuration.secondaryText = "\(setlist.scoreIDs.count) 首乐谱"
+        configuration.secondaryText = T("\(setlist.scoreIDs.count) 首乐谱", "\(setlist.scoreIDs.count) scores")
         configuration.image = UIImage(systemName: "music.note.list")
+        configuration.textProperties.color = ChordPressTheme.Color.charcoal
+        configuration.secondaryTextProperties.color = ChordPressTheme.Color.steel
+        configuration.imageProperties.tintColor = ChordPressTheme.Color.primary
         cell.contentConfiguration = configuration
+        cell.backgroundColor = ChordPressTheme.Color.canvas
         cell.accessoryType = .disclosureIndicator
         return cell
     }
@@ -141,9 +173,13 @@ private final class SetlistEditorViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = setlist.name
+        tableView.backgroundColor = ChordPressTheme.Color.surface
+        tableView.cellLayoutMarginsFollowReadableWidth = true
+        tableView.rowHeight = traitCollection.horizontalSizeClass == .regular ? 68 : 56
+        tableView.sectionHeaderTopPadding = 24
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(
-                title: "演出",
+                title: T("演出", "Perform"),
                 image: UIImage(systemName: "play.fill"),
                 target: self,
                 action: #selector(startPerformance)
@@ -152,7 +188,7 @@ private final class SetlistEditorViewController: UITableViewController {
             UIBarButtonItem(
                 image: UIImage(systemName: "ellipsis.circle"),
                 menu: UIMenu(children: [
-                    UIAction(title: "重命名", image: UIImage(systemName: "pencil")) { [weak self] _ in
+                    UIAction(title: T("重命名", "Rename"), image: UIImage(systemName: "pencil")) { [weak self] _ in
                         self?.renameSetlist()
                     }
                 ])
@@ -177,13 +213,13 @@ private final class SetlistEditorViewController: UITableViewController {
     }
 
     private func renameSetlist() {
-        let alert = UIAlertController(title: "重命名歌单", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: T("重命名歌单", "Rename Setlist"), message: nil, preferredStyle: .alert)
         alert.addTextField { [currentName = setlist.name] field in
             field.text = currentName
             field.clearButtonMode = .whileEditing
         }
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
-        alert.addAction(UIAlertAction(title: "保存", style: .default) { [weak self, weak alert] _ in
+        alert.addAction(UIAlertAction(title: T("取消", "Cancel"), style: .cancel))
+        alert.addAction(UIAlertAction(title: T("保存", "Save"), style: .default) { [weak self, weak alert] _ in
             guard let self,
                   let name = alert?.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines),
                   !name.isEmpty else { return }
@@ -205,7 +241,7 @@ private final class SetlistEditorViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        section == 0 ? "演出顺序" : "添加乐谱"
+        section == 0 ? T("演出顺序", "Performance Order") : T("添加乐谱", "Add Scores")
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -217,9 +253,15 @@ private final class SetlistEditorViewController: UITableViewController {
         let score = indexPath.section == 0 ? orderedScores[indexPath.row] : availableScores[indexPath.row]
         var configuration = cell.defaultContentConfiguration()
         configuration.text = score.title
-        configuration.secondaryText = score.artist ?? score.sourceFormat.rawValue
+        configuration.secondaryText = score.artist ?? score.sourceFormat.displayName
         configuration.image = UIImage(systemName: score.sourceFormat.symbolName)
+        configuration.textProperties.color = ChordPressTheme.Color.charcoal
+        configuration.secondaryTextProperties.color = ChordPressTheme.Color.steel
+        configuration.imageProperties.tintColor = indexPath.section == 0
+            ? ChordPressTheme.Color.primary
+            : ChordPressTheme.Color.teal
         cell.contentConfiguration = configuration
+        cell.backgroundColor = ChordPressTheme.Color.canvas
         cell.accessoryType = indexPath.section == 0 ? .checkmark : .none
         return cell
     }

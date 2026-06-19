@@ -9,6 +9,7 @@ struct MusicScore: Identifiable {
     let importedAt: Date
     var sourceText: String?
     var folder: String?
+    var tags: [String]
     var playbackEvents: [PlaybackEvent]?
 }
 
@@ -33,6 +34,16 @@ enum SourceFormat: String {
     case chordPro = "ChordPro"
     case musicXML = "MusicXML"
     case tab = "Tab"
+
+    var displayName: String {
+        switch self {
+        case .pdf: "PDF"
+        case .image: T("图片", "Image")
+        case .chordPro: "ChordPro"
+        case .musicXML: "MusicXML"
+        case .tab: "Tab"
+        }
+    }
 
     var symbolName: String {
         switch self {

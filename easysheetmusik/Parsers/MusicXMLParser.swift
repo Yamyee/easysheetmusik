@@ -32,13 +32,14 @@ final class MusicXMLParser: NSObject, ScoreParserProtocol {
         let rendered = makeRenderedScore()
         return MusicScore(
             id: UUID(),
-            title: title ?? fileName.map { ($0 as NSString).deletingPathExtension } ?? "MusicXML 乐谱",
+            title: title ?? fileName.map { ($0 as NSString).deletingPathExtension } ?? T("MusicXML 乐谱", "MusicXML Score"),
             artist: artist,
             pages: [ScorePage(number: 1, content: .attributedText(rendered))],
             sourceFormat: .musicXML,
             importedAt: Date(),
             sourceText: String(data: data, encoding: .utf8),
             folder: nil,
+            tags: [],
             playbackEvents: events
         )
     }
@@ -56,7 +57,7 @@ final class MusicXMLParser: NSObject, ScoreParserProtocol {
 
     private func makeRenderedScore() -> NSAttributedString {
         let result = NSMutableAttributedString()
-        let heading = "\(title ?? "MusicXML 乐谱")\n\(artist ?? "")\n♩ = \(Int(tempo))\n\n"
+        let heading = "\(title ?? T("MusicXML 乐谱", "MusicXML Score"))\n\(artist ?? "")\n♩ = \(Int(tempo))\n\n"
         result.append(NSAttributedString(
             string: heading,
             attributes: [.font: UIFont.systemFont(ofSize: 22, weight: .bold)]
